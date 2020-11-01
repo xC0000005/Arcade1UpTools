@@ -70,84 +70,33 @@
 #define CS      SUNXI_GPE(0)
 
 int input_pins[] = {
-PIN4,
-PIN5,
-PIN6,
-PIN7,
-PIN8,
-PIN9,
-PIN10,
-PIN11,
-PIN12,
-PIN13,
-PIN14,
-PIN15,
-PIN16,
-PIN17,
-PIN18,
-PIN19,
-PIN20,
-PIN21,
-PIN22,
-PIN23,
-PIN24,
-PIN25,
-PIN26,
-PIN27,
-PIN28,
-PIN29,
-PIN30,
-PIN31,
-PIN32,
-PIN33,
-PIN34,
-PIN35,
-PIN36,
-
-PIN37,
-PIN38,
-PIN39,
+0x8B,
+0xCA,
+0x8A,
+0xC9,
+0xC2,
+0x23,
+0xC1,
+0x30,
+0xCB,
+0x2F,
+0x24,
+0x22,
+0x80,
+0x85,
+0x81,
+0x86,
+0x82,
+0x87,
+0x2A,
+0x88,
+0x84,
+0x89,
+0xCC,
+0x83,
 };
 
-int pinstate[] = {
-PIN4,
-PIN5,
-PIN6,
-PIN7,
-PIN8,
-PIN9,
-PIN10,
-PIN11,
-PIN12,
-PIN13,
-PIN14,
-PIN15,
-PIN16,
-PIN17,
-PIN18,
-PIN19,
-PIN20,
-PIN21,
-PIN22,
-PIN23,
-PIN24,
-PIN25,
-PIN26,
-PIN27,
-PIN28,
-PIN29,
-PIN30,
-PIN31,
-PIN32,
-PIN33,
-PIN34,
-PIN35,
-PIN36,
-
-PIN37,
-PIN38,
-PIN39,
-};
+int pinstate[0x18] = { 0, };
 
 int debug = 0;
 
@@ -169,9 +118,28 @@ int pinValue(int gpio) {
     return result;
 }
 
+void set_all_to_input() {
+    for (int i = 0; i < (sizeof(input_pins)/ sizeof(input_pins[0])); i++) {
+        sunxi_gpio_input(input_pins[i]);
+        sunxi_gpio_pullup(input_pins[i], 1);
+    }
+}
+
+void show_pins() {
+    printf("Using Pins:\r\n");
+
+    for (int i = 0; i < (sizeof(input_pins)/ sizeof(input_pins[0])); i++) {
+        int pin = input_pins[i];
+        int port = GPIO_BANK(pin);
+        int pin_number = GPIO_NUM(pin);
+        printf("P%c%i\r\n", 'A' + port, pin_number);
+    }
+}
+
 int main(int argc, char * argv[]){
     int result;
     int loop = 0;
+    int show = 0;
 
     result = sunxi_gpio_init();
     if(result == SETUP_DEVMEM_FAIL) {
@@ -186,10 +154,19 @@ int main(int argc, char * argv[]){
         if(debug) printf("Mmap failed on module import\r\n");
         return SETUP_MMAP_FAIL;
     }
-    
+
     if (argc > 1) {
-        if (argv[1] == 'l') loop = 1;
+        if (argv[1][0] == 'l') loop = 1;
+        if (argv[1][0] == 's') show = 1;
     }
+
+    if (show) {
+        printf("showing pins");
+        show_pins();
+        return 0;
+    }
+
+    set_all_to_input();
 
     do {
         for (int i = 0; i < (sizeof(input_pins)/ sizeof(input_pins[0])); i++) {
@@ -206,6 +183,8 @@ int main(int argc, char * argv[]){
                 }
             }
         }
+
+        sleep(1);
     } 
     while(loop);
 

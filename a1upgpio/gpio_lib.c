@@ -129,6 +129,28 @@ int sunxi_gpio_output(unsigned int pin, unsigned int val) {
     return 0;
 }
 
+int sunxi_gpio_pullup(unsigned int pin, unsigned int pull)
+{
+	unsigned int cfg;
+	unsigned int bank = GPIO_BANK(pin);
+	unsigned int index = GPIO_PUL_INDEX(pin);
+	unsigned int offset = GPIO_PUL_OFFSET(pin);
+
+	if (SUNXI_PIO_BASE == 0)
+		return -1;
+
+	struct sunxi_gpio *pio =
+		&((struct sunxi_gpio_reg *)SUNXI_PIO_BASE)->gpio_bank[bank];
+
+	cfg = *(&pio->pull[0] + index);
+	cfg &= ~(0x3 << offset);
+	cfg |= pull << offset;
+
+	*(&pio->pull[0] + index) = cfg;
+
+	return 0;
+}
+
 int sunxi_gpio_input(unsigned int pin) {
 
     unsigned int dat;

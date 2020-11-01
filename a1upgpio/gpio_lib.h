@@ -55,6 +55,9 @@ struct sunxi_gpio_reg {
 #define GPIO_CFG_INDEX(pin)	(((pin) & 0x1F) >> 3)
 #define GPIO_CFG_OFFSET(pin)	((((pin) & 0x1F) & 0x7) << 2)
 
+#define GPIO_PUL_INDEX(pin)     (((pin) & 0x1F) >> 4)
+#define GPIO_PUL_OFFSET(pin)    (((pin) & 0x0F) << 1)
+
 /* GPIO bank sizes */
 #define SUNXI_GPIO_A_NR		(32)
 #define SUNXI_GPIO_B_NR		(32)
