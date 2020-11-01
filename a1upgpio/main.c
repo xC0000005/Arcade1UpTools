@@ -20,6 +20,8 @@
  */
 
 
+#include <stdio.h>
+
 #include "gpio_lib.h"
 
 #define PIN4    SUNXI_GPB(0)
@@ -107,47 +109,105 @@ PIN38,
 PIN39,
 };
 
+int pinstate[] = {
+PIN4,
+PIN5,
+PIN6,
+PIN7,
+PIN8,
+PIN9,
+PIN10,
+PIN11,
+PIN12,
+PIN13,
+PIN14,
+PIN15,
+PIN16,
+PIN17,
+PIN18,
+PIN19,
+PIN20,
+PIN21,
+PIN22,
+PIN23,
+PIN24,
+PIN25,
+PIN26,
+PIN27,
+PIN28,
+PIN29,
+PIN30,
+PIN31,
+PIN32,
+PIN33,
+PIN34,
+PIN35,
+PIN36,
+
+PIN37,
+PIN38,
+PIN39,
+};
+
+int debug = 0;
+
 int pinValue(int gpio) {
     int result;
 
     if(sunxi_gpio_get_cfgpin(gpio) != SUNXI_GPIO_INPUT) {
-        printf("GPIO is not an input");
-        return 0;
+        if(debug) printf("GPIO is not an input\r\n");
+        return -1;
     }
 
     result = sunxi_gpio_input(gpio);
 
     if(result == -1) {
-        printf("Reading pin failed");
-        return 0;
+        if(debug) printf("Reading pin failed\r\n");
+        return -1;
     }
 
     return result;
 }
 
-int main (void){
+int main(int argc, char * argv[]){
     int result;
+    int loop = 0;
 
     result = sunxi_gpio_init();
     if(result == SETUP_DEVMEM_FAIL) {
-        printf("No access to /dev/mem. Try running as root!");
+        if(debug) printf("No access to /dev/mem. Try running as root!\r\n");
         return SETUP_DEVMEM_FAIL;
     }
     else if(result == SETUP_MALLOC_FAIL) {
-        printf("malloc Failure!!");
+        if(debug) printf("malloc Failure!!\r\n");
         return SETUP_MALLOC_FAIL;
     }
     else if(result == SETUP_MMAP_FAIL) {
-        printf("Mmap failed on module import");
+        if(debug) printf("Mmap failed on module import\r\n");
         return SETUP_MMAP_FAIL;
     }
-
-    for (int i = 0; i < (sizeof(input_pins)/ sizeof(input_pins[0])); i++) {
-        int pin_status = pinValue(input_pins[i]);
-        if (pin_status) {
-            printf("PIN%i\r\n", i + 4);
-        }
+    
+    if (argc > 1) {
+        if (argv[1] == 'l') loop = 1;
     }
+
+    do {
+        for (int i = 0; i < (sizeof(input_pins)/ sizeof(input_pins[0])); i++) {
+            int pin_status = pinValue(input_pins[i]);
+            if (pin_status >= 0) {
+                if (loop) {
+                  if (pinstate[i] != pin_status) {
+                      printf("PIN%i:%i\r\n", i + 4, pin_status);
+                      pinstate[i] = pin_status;
+                  }
+                }
+                else {
+                    printf("PIN%i\r\n", i + 4);
+                }
+            }
+        }
+    } 
+    while(loop);
 
     // cleanup
     sunxi_gpio_cleanup();
