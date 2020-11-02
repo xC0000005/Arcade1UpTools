@@ -124,6 +124,7 @@ void set_all_to_input() {
     for (int i = 0; i < (sizeof(input_pins)/ sizeof(input_pins[0])); i++) {
         sunxi_gpio_input(input_pins[i]);
         sunxi_gpio_pullup(input_pins[i], 1);
+        pinstate[i] = 1;
     }
 }
 
@@ -176,12 +177,12 @@ int main(int argc, char * argv[]){
             if (pin_status >= 0) {
                 if (loop) {
                   if (pinstate[i] != pin_status) {
-                      printf("PIN%i:%i\r\n", i + 4, pin_status);
+                      printf("PIN%i:%i\r\n", i, pin_status);
                       pinstate[i] = pin_status;
                   }
                 }
                 else {
-                    printf("PIN%i:i\r\n", i + 4, pin_status);
+                    printf("PIN%i:%i\r\n", i, pin_status);
                 }
             }
         }
