@@ -182,7 +182,10 @@ int main(int argc, char * argv[]){
                   }
                 }
                 else {
-                    printf("PIN%i:%i\r\n", i, pin_status);
+                    // Pullups are enabled, at least on my board.
+                    if (pin_status == 0) {
+                        printf("PIN%i:%i\r\n", i, pin_status);
+                    }
                 }
             }
         }
