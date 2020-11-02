@@ -69,6 +69,8 @@
 #define SCK     SUNXI_GPE(1)
 #define CS      SUNXI_GPE(0)
 
+/* This pin list was extracted from the SFII PCB, 
+   which uses the most inputs. */
 int input_pins[] = {
 0x8B,
 0xCA,
@@ -96,7 +98,7 @@ int input_pins[] = {
 0x83,
 };
 
-int pinstate[0x18] = { 0, };
+int pinstate[0x18] = { 1, };
 
 int debug = 0;
 
@@ -179,7 +181,7 @@ int main(int argc, char * argv[]){
                   }
                 }
                 else {
-                    printf("PIN%i\r\n", i + 4);
+                    printf("PIN%i:i\r\n", i + 4, pin_status);
                 }
             }
         }
