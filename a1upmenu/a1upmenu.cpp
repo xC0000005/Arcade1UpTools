@@ -63,22 +63,21 @@ bool get_game_command() {
 
 void show_game_asset(asset_type asset) {
   char asset_buffer[1024];
-  char *argv[] = {"cat", asset_buffer, 0};
-
+ 
   switch (asset) {
     case selected:
-      sprintf(asset_buffer, "assets/%i.selected.bgra", selected_game);
+      sprintf(asset_buffer, "cat ./assets/%i.selected.bgra > /dev/fb0", selected_game);
       break;
     case loading:
-      sprintf(asset_buffer, "assets/%i.loading.bgra", selected_game);
+      sprintf(asset_buffer, "cat ./assets/%i.loading.bgra > /dev/fb0", selected_game);
       break;
     case splash:
-      sprintf(asset_buffer, "assets/splash.bgra");
+      sprintf(asset_buffer, "cat ./assets/splash.bgra > /dev/fb0");
       break;
   }
 
   // Now cat the file into the framebuffer
-  execvp("cat", argv);
+  system(asset_buffer);
 }
 
 // Read the inputs, and if something changes
@@ -119,7 +118,7 @@ void confirm_and_start_game() {
   } while(true);
 }
 
-void main(void) {
+int main(void) {
   struct timespec ts;
   ts.tv_sec = SELECT_DELAY_IN_MS / 1000;
   ts.tv_nsec = (SELECT_DELAY_IN_MS % 1000) * 1000000;
@@ -170,4 +169,6 @@ void main(void) {
     nanosleep(&ts, &ts);    
     /* code */
   } while (true); 
+
+  return 0;
 }
