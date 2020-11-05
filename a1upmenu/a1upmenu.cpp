@@ -20,6 +20,8 @@
 #define CONFIRM_DELAY_IN_MS 500
 #define MAXIMUM_GAMES 1024
 
+// Note thse should probably be the .so constants.
+// Or maybe have a file read that defines the pins?
 #define UP     0x01
 #define DOWN   0x02
 #define SELECT 0x04
@@ -65,10 +67,10 @@ void show_game_asset(asset_type asset) {
 
   switch (asset) {
     case selected:
-      sprintf(asset_buffer, "assets/%i.selected.bgra");
+      sprintf(asset_buffer, "assets/%i.selected.bgra", selected_game);
       break;
     case loading:
-      sprintf(asset_buffer, "assets/%i.loading.bgra");
+      sprintf(asset_buffer, "assets/%i.loading.bgra", selected_game);
       break;
     case splash:
       sprintf(asset_buffer, "assets/splash.bgra");
